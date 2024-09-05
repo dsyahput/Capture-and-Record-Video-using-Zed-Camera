@@ -4,22 +4,25 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <ctime> 
+#include <ctime>
 
 using namespace std;
 using namespace sl;
 
-string Filename() {
+string Filename(const string& directory) {
     time_t now = time(0);
     tm *ltm = localtime(&now);
 
     char filename[100];
-    sprintf(filename, "video_%02d:%02d:%02d.avi", ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
-    return string(filename);
+    sprintf(filename, "video_%02d-%02d-%02d.avi", ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    
+    return directory + "/" + string(filename);
 }
 
 int main(int argc, char **argv)
 {
+    string save_path = "../videos";
+
     sl::Camera zed;
 
     InitParameters init_parameters;
@@ -57,7 +60,7 @@ int main(int argc, char **argv)
 
             if (c == 's' && !recording)
             {
-                string path = Filename();
+                string path = Filename(save_path); 
                 std::cout << "Recording started for " << path << "\n";
                 video.open(path, cv::VideoWriter::fourcc('M','J','P','G'), 30, cv::Size(cvImage.cols, cvImage.rows));
 
