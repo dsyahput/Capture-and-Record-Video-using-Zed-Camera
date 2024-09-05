@@ -24,4 +24,5 @@ After building the program, you can run it with the following command:
 
 Press the 's' key to start recording the video.  
 Press the 'x' key to stop the recording.  
-Press 'Esc' to exit the program.
+Press 'Esc' to exit the program.  
+The video will be saved in the 'videos' folder.
