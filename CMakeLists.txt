@@ -34,7 +34,7 @@ set(PROJECT_SOURCES
     main.cpp
 )
 
-add_executable(record ${PROJECT_SOURCES})
+add_executable(zed_camera_record ${PROJECT_SOURCES})
 
 if (LINK_SHARED_ZED)
     SET(ZED_LIBS ${ZED_LIBRARIES})
@@ -42,4 +42,4 @@ else()
     SET(ZED_LIBS ${ZED_STATIC_LIBRARIES})
 endif()
 
-target_link_libraries(record ${ZED_LIBS} ${OpenCV_LIBRARIES})
+target_link_libraries(zed_camera_record ${ZED_LIBS} ${OpenCV_LIBRARIES})
