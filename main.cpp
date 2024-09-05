@@ -1,0 +1,88 @@
+#include <iostream>
+#include <opencv2/opencv.hpp>
+#include <sl/Camera.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <ctime> 
+
+using namespace std;
+using namespace sl;
+
+string Filename() {
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+
+    char filename[100];
+    sprintf(filename, "video_%02d:%02d:%02d.avi", ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
+    return string(filename);
+}
+
+int main(int argc, char **argv)
+{
+    sl::Camera zed;
+
+    InitParameters init_parameters;
+    init_parameters.depth_mode = DEPTH_MODE::NONE; 
+    init_parameters.camera_resolution = RESOLUTION::HD720; 
+    init_parameters.camera_fps = 60;
+
+    auto returned_state = zed.open(init_parameters);
+    if (returned_state != ERROR_CODE::SUCCESS)
+    {
+        cout << "Error " << returned_state << ", exit program." << endl;
+        return EXIT_FAILURE;
+    }
+
+    bool recording = false;
+    cv::VideoWriter video;
+
+    while (true)
+    {
+        if (zed.grab() == ERROR_CODE::SUCCESS)
+        {
+            sl::Mat image;
+            zed.retrieveImage(image, VIEW::LEFT);
+
+            cv::Mat cvImage = cv::Mat((int)image.getHeight(), (int)image.getWidth(), CV_8UC4, image.getPtr<sl::uchar1>(sl::MEM::CPU));
+            cv::cvtColor(cvImage, cvImage, cv::COLOR_RGBA2RGB);
+
+            cv::imshow("CAMERA", cvImage);
+
+            char c = (char)cv::waitKey(1);
+
+            if (c == 27) { 
+                break;
+            }
+
+            if (c == 's' && !recording)
+            {
+                string path = Filename();
+                std::cout << "Recording started for " << path << "\n";
+                video.open(path, cv::VideoWriter::fourcc('M','J','P','G'), 30, cv::Size(cvImage.cols, cvImage.rows));
+
+                if (!video.isOpened()) {
+                    cerr << "Error: Could not open video writer." << endl;
+                    return EXIT_FAILURE;
+                }
+
+                recording = true;
+            }  
+
+            if (recording)
+                video.write(cvImage);
+
+            if (c == 'x')
+            {
+                std::cout << "Recording finished.\n";
+                recording = false;
+                video.release();
+            }
+        }
+    }
+
+    zed.close();
+    cv::destroyAllWindows();
+
+    return 0;
+}
