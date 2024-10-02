@@ -16,8 +16,10 @@ string Filename(const string& directory) {
     char filename[100];
     sprintf(filename, "video_%02d-%02d-%02d.avi", ltm->tm_hour, ltm->tm_min, ltm->tm_sec);
     
-    return directory + "/" + string(filename);
+    return directory + "/" + string(filename); 
 }
+
+// gegegegegehgjfhtydrty
 
 int main(int argc, char **argv)
 {
