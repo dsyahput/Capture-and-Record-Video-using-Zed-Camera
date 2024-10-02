@@ -19,8 +19,6 @@ string Filename(const string& directory) {
     return directory + "/" + string(filename); 
 }
 
-// gegegegegehgjfhtydrty
-
 int main(int argc, char **argv)
 {
     string save_path = "../videos";
